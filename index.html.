@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LupaGrams</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { background: #17212b; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+  .screen { display: none; flex-direction: column; height: 100%; width: 100%; }
+  .screen.active { display: flex; }
+  
+  /* Экран входа */
+  .auth-box { margin: auto; width: 88%; max-width: 360px; text-align: center; }
+  .logo { width: 90px; height: 90px; background: linear-gradient(135deg, #2aabee, #229ed9); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: bold; box-shadow: 0 4px 15px rgba(42,171,238,0.4); }
+  h2 { font-size: 22px; margin-bottom: 10px; }
+  p.sub { color: #7f91a4; font-size: 14px; margin-bottom: 25px; line-height: 1.4; }
+  input { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #2b5278; background: #242f3d; color: #fff; font-size: 17px; outline: none; margin-bottom: 15px; text-align: center; }
+  input:focus { border-color: #2aabee; }
+  button { width: 100%; padding: 14px; border-radius: 10px; border: none; background: #2aabee; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; }
+  button:active { opacity: 0.85; }
+  .err { color: #ff595a; font-size: 13px; margin-top: 10px; min-height: 18px; }
+
+  /* Шапка чата */
+  .header { background: #242f3d; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #101921; }
+  .header h3 { font-size: 18px; }
+  .badge { font-size: 12px; color: #2aabee; background: rgba(42,171,238,0.15); padding: 4px 8px; border-radius: 6px; }
+  
+  /* Сообщения */
+  .messages { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #0e1621; }
+  .msg { max-width: 80%; padding: 9px 13px; border-radius: 12px; font-size: 15px; line-height: 1.35; word-wrap: break-word; }
+  .msg.in { background: #182533; align-self: flex-start; border-bottom-left-radius: 4px; }
+  .msg.out { background: #2b5278; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .msg .sender { font-size: 12px; color: #64b5f6; font-weight: 600; margin-bottom: 3px; }
+  
+  /* Ввод сообщения */
+  .input-bar { background: #242f3d; padding: 8px 10px; display: flex; gap: 8px; align-items: center; }
+  .input-bar input { margin: 0; text-align: left; padding: 11px 14px; border-radius: 20px; font-size: 15px; }
+  .send-btn { width: 44px; height: 44px; border-radius: 50%; padding: 0; flex-shrink: 0; font-size: 18px; }
+</style>
+</head>
+<body>
+
+<!-- Экран 1: Ввод номера -->
+<div id="scr-phone" class="screen active">
+  <div class="auth-box">
+    <div class="logo">L</div>
+    <h2>Ваш телефон</h2>
+    <p class="sub">Введите виртуальный номер, полученный в боте <b>@LupaGrams_bot</b></p>
+    <input id="inp-phone" type="tel" placeholder="+888 000 0000" value="+888 ">
+    <button onclick="sendCode()">Продолжить</button>
+    <div id="err-phone" class="err"></div>
+  </div>
+</div>
+
+<!-- Экран 2: Ввод кода -->
+<div id="scr-code" class="screen">
+  <div class="auth-box">
+    <div class="logo">🔐</div>
+    <h2 id="lbl-phone">+888 ...</h2>
+    <p class="sub">Мы отправили 5-значный код подтверждения в ваш чат с ботом <b>LupaGrams Auth</b></p>
+    <input id="inp-code" type="number" placeholder="Код из 5 цифр">
+    <button onclick="verifyCode()">Войти в LupaGrams</button>
+    <div id="err-code" class="err"></div>
+  </div>
+</div>
+
+<!-- Экран 3: Общий чат LupaGrams -->
+<div id="scr-chat" class="screen">
+  <div class="header">
+    <div>
+      <h3>LupaGrams Cloud</h3>
+      <span id="my-num-badge" class="badge">+888 ...</span>
+    </div>
+    <button style="width:auto;padding:6px 12px;font-size:13px;background:#2b5278;" onclick="logout()">Выйти</button>
+  </div>
+  <div id="msg-list" class="messages"></div>
+  <div class="input-bar">
+    <input id="inp-msg" type="text" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') sendMsg()">
+    <button class="send-btn" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<script>
+const DB_URL = "https://firebaseio.com";
+const BOT_TOKEN = "9101603829:AAGeFoLY1thuPdaQ72Fd9n2tyoy2QfAB9lA";
+
+let currentPhone = "";
+let generatedCode = "";
+
+if (localStorage.getItem("lupa_phone")) {
+  currentPhone = localStorage.getItem("lupa_phone");
+  openChat();
+}
+
+async function sendCode() {
+  const raw = document.getElementById("inp-phone").value.trim();
+  const cleanPhone = raw.replace(/\s+/g, "");
+  const err = document.getElementById("err-phone");
+  err.innerText = "Проверка номера...";
+
+  try {
+    const res = await fetch(`${DB_URL}/numbers/${encodeURIComponent(cleanPhone)}.json`);
+    const data = await res.json();
+
+    if (!data || !data.chat_id) {
+      err.innerText = "Номер не найден! Сначала получите его в @LupaGrams_bot";
+      return;
+    }
+
+    generatedCode = Math.floor(10000 + Math.random() * 90000).toString();
+    currentPhone = raw;
+
+    const text = `🔐 Код входа в LupaGrams: ${generatedCode}\n\nНикому не сообщайте этот код!`;
+    await fetch(`https://telegram.org{BOT_TOKEN}/sendMessage?chat_id=${data.chat_id}&text=${encodeURIComponent(text)}`);
+
+    err.innerText = "";
+    document.getElementById("lbl-phone").innerText = currentPhone;
+    showScreen("scr-code");
+  } catch (e) {
+    err.innerText = "Ошибка сети. Проверьте интернет.";
+  }
+}
+
+function verifyCode() {
+  const code = document.getElementById("inp-code").value.trim();
+  if (code === generatedCode) {
+    localStorage.setItem("lupa_phone", currentPhone);
+    openChat();
+  } else {
+    document.getElementById("err-code").innerText = "Неверный код! Проверьте сообщение от бота.";
+  }
+}
+
+function openChat() {
+  document.getElementById("my-num-badge").innerText = currentPhone;
+  showScreen("scr-chat");
+  loadMessages();
+  setInterval(loadMessages, 2500);
+}
+
+async function loadMessages() {
+  try {
+    const res = await fetch(`${DB_URL}/chat.json`);
+    const data = await res.json();
+    const list = document.getElementById("msg-list");
+    list.innerHTML = "";
+    if (!data) return;
+
+    Object.values(data).forEach(m => {
+      const div = document.createElement("div");
+      const isMe = m.sender === currentPhone;
+      div.className = "msg " + (isMe ? "out" : "in");
+      div.innerHTML = `${!isMe ? `<div class="sender">${m.sender}</div>` : ""}${m.text}`;
+      list.appendChild(div);
+    });
+    list.scrollTop = list.scrollHeight;
+  } catch (e) {}
+}
+
+async function sendMsg() {
+  const inp = document.getElementById("inp-msg");
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = "";
+
+  await fetch(`${DB_URL}/chat.json`, {
+    method: "POST",
+    body: JSON.stringify({ sender: currentPhone, text: text, time: Date.now() })
+  });
+  loadMessages();
+}
+
+function logout() {
+  localStorage.removeItem("lupa_phone");
+  showScreen("scr-phone");
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+</script>
+</body>
+  </html>
+  
