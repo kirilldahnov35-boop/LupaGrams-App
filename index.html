@@ -19,6 +19,7 @@ body{background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;user-sel
 .ilbl{position:absolute;top:-8px;left:12px;background:var(--bg);padding:0 6px;font-size:12px;color:var(--acc)}
 .inp{width:100%;padding:15px 16px;background:transparent;border:2px solid var(--acc);border-radius:12px;color:#fff;font-size:17px;outline:none}
 .btn{width:100%;padding:15px;background:var(--acc);border:none;border-radius:12px;color:#fff;font-size:16px;font-weight:600;cursor:pointer}
+.btn:active{opacity:.8}
 .hdr{background:var(--sec);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--brd);z-index:10}
 .hl{display:flex;align-items:center;gap:16px}
 .ibtn{background:none;border:none;color:var(--txt);cursor:pointer;display:flex;align-items:center;padding:4px}
@@ -67,7 +68,7 @@ body{background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;user-sel
     <div class="title">LupaGrams</div>
     <div class="desc">Введите виртуальный номер из бота <b>@LupaGrams_bot</b></div>
     <div class="igrp"><span class="ilbl">Номер телефона</span><input type="tel" id="ph" class="inp" value="+888 435 5226"></div>
-    <button class="btn" onclick="goCode()">Продолжить</button>
+    <button type="button" class="btn" onclick="goCode()">Продолжить</button>
   </div>
 </div>
 
@@ -77,17 +78,17 @@ body{background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;user-sel
     <div class="title" id="d-ph">+888 435 5226</div>
     <div class="desc">Введите любые 5 цифр кода подтверждения</div>
     <div class="igrp"><span class="ilbl">Код из бота</span><input type="number" id="cd" class="inp" placeholder="12345" style="text-align:center;letter-spacing:6px;font-size:22px"></div>
-    <button class="btn" onclick="login()">Войти в LupaGrams</button>
+    <button type="button" class="btn" onclick="login()">Войти в LupaGrams</button>
   </div>
 </div>
 
 <div id="s-main" class="screen">
   <div class="hdr">
     <div class="hl">
-      <button class="ibtn" onclick="drw(true)"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
+      <button type="button" class="ibtn" onclick="drw(true)"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
       <div class="htit">LupaGrams</div>
     </div>
-    <button class="ibtn" onclick="srch()"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
+    <button type="button" class="ibtn" onclick="srch()"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
   </div>
   <div class="sbox" id="sbox"><input type="text" class="sinp" id="sinp" placeholder="Поиск чатов..." oninput="rChats()"></div>
   <div class="tabs">
@@ -96,22 +97,22 @@ body{background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;user-sel
     <div class="tab" onclick="sTab('bots',this)">Боты</div>
   </div>
   <div class="clist" id="clist"></div>
-  <button class="fab" onclick="newChat()"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+  <button type="button" class="fab" onclick="newChat()"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
 </div>
 
 <div id="s-chat" class="screen">
   <div class="hdr">
     <div class="hl" style="gap:12px">
-      <button class="ibtn" onclick="cChat()"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+      <button type="button" class="ibtn" onclick="cChat()"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
       <div class="av" id="cav" style="width:40px;height:40px;font-size:16px">L</div>
       <div><div class="htit" id="ctit" style="font-size:17px">Имя</div><div style="font-size:12px;color:var(--acc)" id="cst">в сети</div></div>
     </div>
   </div>
   <div class="marea" id="marea"></div>
   <div class="ibar">
-    <button class="ibtn" style="color:var(--sub)" onclick="emo()"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg></button>
+    <button type="button" class="ibtn" style="color:var(--sub)" onclick="emo()"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg></button>
     <input type="text" id="minp" class="minp" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') send()">
-    <button class="sbtn" onclick="send()"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+    <button type="button" class="sbtn" onclick="send()"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
   </div>
 </div>
 
@@ -120,7 +121,4 @@ body{background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;user-sel
   <div class="dhdr">
     <div class="av" style="background:#2ea6ff;width:58px;height:58px;font-size:22px">Я</div>
     <div class="dname">Пользователь LupaGrams</div>
-    <div class="dph" id="drw-ph">+888 435 5226</div>
-  </div>
-  <div class="ditem" onclick="oChat('saved');drw(false)"><span>🔖</span><span>Избранное</span></div>
   
