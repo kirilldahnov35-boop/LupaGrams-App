@@ -382,5 +382,25 @@
       const text = input.value.trim();
       if (!text || !currentChatId) return;
 
-      const now = new Date();
-      
+            const now = new Date();
+      const time = now.getHours().toString().padStart(2, "0") + ":" + now.getMinutes().toString().padStart(2, "0");
+
+      const chat = chatsData.find(c => c.id === currentChatId);
+      chat.messages.push({ text, type: "out", time });
+      input.value = "";
+      renderMessages(chat.messages);
+    }
+
+    function filterChats(query) {
+      const filtered = chatsData.filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
+      renderChats(filtered);
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+    }
+
+    renderChats();
+  </script>
+</body>
+</html>
