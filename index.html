@@ -1,310 +1,386 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LupaGrams</title>
-    <script src="https://telegram.org"></script>
-    <style>
-        :root {
-            --bg-color: #17212b;
-            --text-color: #ffffff;
-            --hint-color: #8b9bb4;
-            --accent-color: #2ea6ff;
-            --accent-hover: #2593e6;
-            --error-color: #e53935;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Messenger</title>
+  <style>
+    :root {
+      --bg-main: #ffffff;
+      --bg-secondary: #f4f4f5;
+      --bg-chat: #e5ebf1;
+      --header-bg: #517da2;
+      --header-text: #ffffff;
+      --text-primary: #000000;
+      --text-secondary: #707579;
+      --msg-in: #ffffff;
+      --msg-out: #eeffde;
+      --accent: #3390ec;
+      --border: #dfe1e5;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+    body.dark {
+      --bg-main: #17212b;
+      --bg-secondary: #0e1621;
+      --bg-chat: #0e1621;
+      --header-bg: #17212b;
+      --header-text: #ffffff;
+      --text-primary: #f5f5f5;
+      --text-secondary: #7f91a4;
+      --msg-in: #182533;
+      --msg-out: #2b5278;
+      --accent: #6ab2f2;
+      --border: #0e1621;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 24px;
-            overflow-x: hidden;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        .screen {
-            width: 100%;
-            max-width: 360px;
-            text-align: center;
-            transition: opacity 0.25s ease, transform 0.25s ease;
-        }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      height: 100dvh;
+      overflow: hidden;
+    }
 
-        .screen.hidden {
-            display: none;
-            opacity: 0;
-        }
+    /* Экраны */
+    .screen {
+      display: none;
+      flex-direction: column;
+      height: 100dvh;
+      width: 100%;
+    }
+    .screen.active {
+      display: flex;
+    }
 
-        /* Фирменная иконка */
-        .logo-circle {
-            width: 112px;
-            height: 112px;
-            background-color: var(--accent-color);
-            border-radius: 50%;
-            margin: 0 auto 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(46, 166, 255, 0.2);
-        }
+    /* Шапка */
+    .header {
+      background-color: var(--header-bg);
+      color: var(--header-text);
+      height: 56px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .header-title {
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .header-subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    .icon-btn {
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px;
+    }
 
-        .logo-circle svg {
-            width: 58px;
-            height: 58px;
-            fill: #ffffff;
-            transform: translateX(-2px);
-        }
+    /* Поиск */
+    .search-bar {
+      padding: 8px 12px;
+      background: var(--bg-main);
+      border-bottom: 1px solid var(--border);
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 8px 14px;
+      border-radius: 20px;
+      border: none;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 15px;
+      outline: none;
+    }
 
-        h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            letter-spacing: -0.3px;
-        }
+    /* Список чатов */
+    .chat-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+    .chat-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      gap: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+    }
+    .chat-item:active {
+      background-color: var(--bg-secondary);
+    }
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #5ca8f6, #2c78d4);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .chat-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .chat-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .chat-name {
+      font-weight: 600;
+      font-size: 16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chat-time {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .chat-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chat-last-msg {
+      font-size: 14px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .badge {
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 12px;
+    }
 
-        .subtitle {
-            color: var(--hint-color);
-            font-size: 14px;
-            line-height: 1.45;
-            margin-bottom: 32px;
-        }
+    /* Окно чата */
+    .messages-area {
+      flex: 1;
+      background-color: var(--bg-chat);
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .msg {
+      max-width: 78%;
+      padding: 8px 12px;
+      border-radius: 14px;
+      font-size: 15px;
+      line-height: 1.35;
+      position: relative;
+      word-wrap: break-word;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.08);
+    }
+    .msg.in {
+      background-color: var(--msg-in);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .msg.out {
+      background-color: var(--msg-out);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .msg-meta {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-align: right;
+      margin-top: 3px;
+    }
 
-        .subtitle span {
-            color: var(--text-color);
-            font-weight: 500;
-        }
-
-        /* Поле ввода в стиле Telegram */
-        .input-wrapper {
-            position: relative;
-            margin-bottom: 24px;
-            text-align: left;
-        }
-
-        .input-label {
-            position: absolute;
-            top: -8px;
-            left: 12px;
-            background-color: var(--bg-color);
-            padding: 0 6px;
-            font-size: 12px;
-            color: var(--accent-color);
-            font-weight: 500;
-            transition: color 0.2s;
-            z-index: 2;
-        }
-
-        .input-field {
-            width: 100%;
-            height: 54px;
-            padding: 0 16px;
-            background-color: transparent;
-            border: 2px solid var(--accent-color);
-            border-radius: 12px;
-            color: var(--text-color);
-            font-size: 17px;
-            font-weight: 400;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-field:focus {
-            border-color: #52b7ff;
-        }
-
-        .input-wrapper.error .input-field {
-            border-color: var(--error-color);
-            animation: shake 0.35s ease;
-        }
-
-        .input-wrapper.error .input-label {
-            color: var(--error-color);
-        }
-
-        /* Кнопка Продолжить */
-        .tg-button {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            height: 50px;
-            background-color: var(--accent-color);
-            color: #ffffff;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.15s, transform 0.1s;
-            user-select: none;
-        }
-
-        .tg-button:hover {
-            background-color: var(--accent-hover);
-        }
-
-        .tg-button:active {
-            transform: scale(0.98);
-        }
-
-        .tg-button:disabled {
-            opacity: 0.7;
-            cursor: default;
-            transform: none;
-        }
-
-        /* Кружок загрузки как в Telegram */
-        .spinner {
-            display: none;
-            width: 22px;
-            height: 22px;
-            border: 2.5px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #ffffff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        .tg-button.loading .btn-label {
-            display: none;
-        }
-
-        .tg-button.loading .spinner {
-            display: block;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: var(--accent-color);
-            font-size: 14px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-6px); }
-            75% { transform: translateX(6px); }
-        }
-    </style>
+    /* Поле ввода */
+    .input-bar {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      background: var(--bg-main);
+      gap: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .input-bar input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 16px;
+      padding: 6px;
+    }
+    .send-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- ЭКРАН 1: Ввод номера -->
-    <div class="screen" id="screen-phone">
-        <div class="logo-circle">
-            <svg viewBox="0 0 24 24">
-                <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/>
-            </svg>
-        </div>
-
-        <h1>LupaGrams</h1>
-        <p class="subtitle">Введите виртуальный номер из бота<br><span>@LupaGrams_bot</span></p>
-
-        <div class="input-wrapper" id="phone-group">
-            <label class="input-label" for="phone-input">Номер телефона</label>
-            <input type="tel" class="input-field" id="phone-input" value="+888 " autocomplete="off">
-        </div>
-
-        <button type="button" class="tg-button" id="btn-continue">
-            <span class="btn-label">Продолжить</span>
-            <div class="spinner"></div>
-        </button>
+  <!-- ЭКРАН 1: СПИСОК ЧАТОВ -->
+  <div id="chatsScreen" class="screen active">
+    <div class="header">
+      <div class="header-left">
+        <button class="icon-btn" onclick="toggleTheme()" title="Сменить тему">🌓</button>
+        <span class="header-title">Telegram</span>
+      </div>
     </div>
 
-    <!-- ЭКРАН 2: Ввод кода подтверждения -->
-    <div class="screen hidden" id="screen-code">
-        <div class="logo-circle">
-            <svg viewBox="0 0 24 24">
-                <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/>
-            </svg>
-        </div>
-
-        <h1 id="display-phone">+888 000 0000</h1>
-        <p class="subtitle">Мы отправили код подтверждения в бот <span>@LupaGrams_bot</span></p>
-
-        <div class="input-wrapper" id="code-group">
-            <label class="input-label" for="code-input">Код</label>
-            <input type="text" inputmode="numeric" maxlength="5" class="input-field" id="code-input" placeholder="12345" autocomplete="off">
-        </div>
-
-        <button type="button" class="tg-button" id="btn-verify">
-            <span class="btn-label">Войти</span>
-            <div class="spinner"></div>
-        </button>
-
-        <a class="back-link" id="btn-back">Изменить номер</a>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Поиск" oninput="filterChats(this.value)" />
     </div>
 
-    <script>
-        // Инициализация Telegram Web App (если открыто внутри ТГ)
-        if (window.Telegram && window.Telegram.WebApp) {
-            const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
-            tg.setHeaderColor('#17212b');
-            tg.setBackgroundColor('#17212b');
-        }
+    <div class="chat-list" id="chatList"></div>
+  </div>
 
-        const phoneInput = document.getElementById('phone-input');
-        const phoneGroup = document.getElementById('phone-group');
-        const btnContinue = document.getElementById('btn-continue');
+  <!-- ЭКРАН 2: ПЕРЕПИСКА -->
+  <div id="dialogScreen" class="screen">
+    <div class="header">
+      <div class="header-left">
+        <button class="icon-btn" onclick="closeChat()">←</button>
+        <div class="avatar" id="dialogAvatar" style="width:38px;height:38px;font-size:15px;">А</div>
+        <div>
+          <div class="header-title" id="dialogName">Имя</div>
+          <div class="header-subtitle" id="dialogStatus">в сети</div>
+        </div>
+      </div>
+    </div>
 
-        const codeInput = document.getElementById('code-input');
-        const codeGroup = document.getElementById('code-group');
-        const btnVerify = document.getElementById('btn-verify');
-        const btnBack = document.getElementById('btn-back');
+    <div class="messages-area" id="messagesArea"></div>
 
-        const screenPhone = document.getElementById('screen-phone');
-        const screenCode = document.getElementById('screen-code');
-        const displayPhone = document.getElementById('display-phone');
+    <form class="input-bar" onsubmit="handleSendMessage(event)">
+      <input type="text" id="messageInput" placeholder="Сообщение" autocomplete="off" />
+      <button type="submit" class="send-btn">➤</button>
+    </form>
+  </div>
 
-        // Автоматическое форматирование номера (+888 XXX XXXX)
-        phoneInput.addEventListener('input', function(e) {
-            phoneGroup.classList.remove('error');
-            let digits = this.value.replace(/\D/g, '');
-            
-            if (!digits.startsWith('888')) {
-                digits = '888' + digits.replace(/^8+/, '');
-            }
-            digits = digits.substring(0, 10);
+  <script>
+    // Демо-данные (замените на загрузку с вашего бэкенда)
+    const chatsData = [
+      {
+        id: 1,
+        name: "Избранное",
+        status: "облачное хранилище",
+        unread: 0,
+        messages: [
+          { text: "Сохраненная заметка", type: "out", time: "12:00" }
+        ]
+      },
+      {
+        id: 2,
+        name: "Алексей",
+        status: "был(а) недавно",
+        unread: 2,
+        messages: [
+          { text: "Привет! Как продвигается проект?", type: "in", time: "14:05" },
+          { text: "Интерфейс почти готов!", type: "out", time: "14:06" }
+        ]
+      }
+    ];
 
-            let formatted = '+888';
-            if (digits.length > 3) {
-                formatted += ' ' + digits.substring(3, 6);
-            }
-            if (digits.length > 6) {
-                formatted += ' ' + digits.substring(6, 10);
-            }
-            this.value = formatted;
-        });
+    let currentChatId = null;
 
-        // Нажатие на кнопку "Продолжить"
-        btnContinue.addEventListener('click', function() {
-            const digits = phoneInput.value.replace(/\D/g, '');
+    function renderChats(list = chatsData) {
+      const container = document.getElementById("chatList");
+      container.innerHTML = "";
+      list.forEach(chat => {
+        const lastMsg = chat.messages[chat.messages.length - 1];
+        const el = document.createElement("div");
+        el.className = "chat-item";
+        el.onclick = () => openChat(chat.id);
+        el.innerHTML = `
+          <div class="avatar">${chat.name[0].toUpperCase()}</div>
+          <div class="chat-info">
+            <div class="chat-top">
+              <span class="chat-name">${chat.name}</span>
+              <span class="chat-time">${lastMsg ? lastMsg.time : ""}</span>
+            </div>
+            <div class="chat-bottom">
+              <span class="chat-last-msg">${lastMsg ? lastMsg.text : "Нет сообщений"}</span>
+              ${chat.unread > 0 ? `<span class="badge">${chat.unread}</span>` : ""}
+            </div>
+          </div>
+        `;
+        container.appendChild(el);
+      });
+    }
 
-            // Проверка, что номер введен полностью (10 цифр вместе с 888)
-            if (digits.length < 10) {
-                phoneGroup.classList.add('error');
-                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
-                    window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-                }
+    function openChat(id) {
+      currentChatId = id;
+      const chat = chatsData.find(c => c.id === id);
+      chat.unread = 0;
+
+      document.getElementById("dialogName").textContent = chat.name;
+      document.getElementById("dialogStatus").textContent = chat.status;
+      document.getElementById("dialogAvatar").textContent = chat.name[0].toUpperCase();
+
+      renderMessages(chat.messages);
+      document.getElementById("chatsScreen").classList.remove("active");
+      document.getElementById("dialogScreen").classList.add("active");
+    }
+
+    function closeChat() {
+      currentChatId = null;
+      document.getElementById("dialogScreen").classList.remove("active");
+      document.getElementById("chatsScreen").classList.add("active");
+      renderChats();
+    }
+
+    function renderMessages(messages) {
+      const area = document.getElementById("messagesArea");
+      area.innerHTML = "";
+      messages.forEach(m => {
+        const div = document.createElement("div");
+        div.className = `msg ${m.type}`;
+        div.innerHTML = `
+          <div>${m.text}</div>
+          <div class="msg-meta">${m.time} ${m.type === "out" ? "✓✓" : ""}</div>
+        `;
+        area.appendChild(div);
+      });
+      area.scrollTop = area.scrollHeight;
+    }
+
+    function handleSendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+      if (!text || !currentChatId) return;
+
+      const now = new Date();
       
